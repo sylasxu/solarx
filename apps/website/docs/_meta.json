@@ -1,0 +1,18 @@
+[
+  {
+    "text": "指南",
+    "link": "/guides/overview/introduction"
+  },
+  {
+    "text": "组件",
+    "link": "/components/overview"
+  },
+  {
+    "text": "图表",
+    "link": "/charts/"
+  },
+  {
+    "text": "工具函数",
+    "link": "/utils/"
+  }
+]

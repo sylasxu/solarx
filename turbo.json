@@ -1,0 +1,30 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "ui": "tui",
+    "tasks": {
+      "build": {
+        "dependsOn": ["prepare"],
+        "outputs": ["dist/**"]
+      },
+      "dev": {
+        "dependsOn": ["^prepare"],
+        "cache": false,
+        "persistent": true
+      },
+      "test": {
+        "inputs": ["packages/ui/src/**/*.test.tsx"],
+        "outputs": []
+      },
+      "prepare": {
+        "outputs": ["packages/ui/styled-system/**"]
+      },
+       "gen:ai-metadata": {
+        "cache": false
+      }
+    }
+  } 
+  
+  
+  
+  
+  

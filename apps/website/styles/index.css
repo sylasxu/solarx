@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+:root {
+  /* 修改主题色 */
+  --rp-c-brand: var(--color-indigo-500);
+  --rp-c-brand-dark: var(--color-indigo-600);
+  --rp-c-brand-darker: var(--color-indigo-800);
+  --rp-c-brand-light: var(--color-indigo-400);
+  --rp-c-brand-lighter: var(--color-indigo-300);
+  --rp-c-link: white;
+  --rp-c-brand-tint: var(--color-indigo-500);
+  /* 修改左侧侧边栏宽度 */
+  --rp-sidebar-width: 14rem;
+  /* 修改右侧大纲栏宽度 */
+  --rp-aside-width: 12rem;
+  --rp-content-padding-x: 1.5rem;
+  --rp-content-padding-y: 1rem;
+
+  /* 修改代码块标题背景 */
+  /* --rp-code-title-bg: rgba(250, 192, 61, 0.15); */
+  /* 修改代码块内容背景 */
+  /* --rp-code-block-bg: rgba(214, 188, 70, 0.05); */
+  --rp-radius: 0.25rem;
+  --rp-radius-small: 0.25rem;
+  --rp-radius-large: 0.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 1280px) {
+  html:root {
+    --rp-content-padding-x: 1.5rem;
+  }
+  .rspress-nav {
+    padding: 0 var(--rp-content-padding-x);
+  }
+}
+
+body {
+  max-width: 80rem;
+}
+
+li > a {
+  margin-left: 0 !important;
+}
+
+/* .rspress-doc-container {
+  padding-right: 2rem;
+} */
+
+.rspress-sidebar-menu {
+  padding: 0 .5rem;
+}
+.rspress-nav-appearance > div {
+  display: contents;
+  border: none;
+}
+.rspress-nav-menu-item {
+  background: inherit;
+  color: var(--rp-c-text-2);
+}
+.rspress-nav-menu-item:hover,
+.rspress-nav-menu-item:active {
+  background: inherit;
+  color: var(--rp-c-text-1);
+}
+.rspress-nav-search-button {
+  border: none;
+  width: 12rem;
+}
+.rspress-nav-search-button > Button {
+  width: inherit;
+}
+.rspress-nav-search-button > Button > div {
+  margin-left: auto;
+}
+.rspress-nav-search-button:hover {
+  border: none;
+}
+
+.aside-link.aside-active,
+.aside-link.aside-active:hover {
+  color: var(--rp-c-text-1);
+  background-color: inherit;
+}
+
+.rspress-sidebar-group {
+  margin-left: initial !important;
+}
+.rspress-sidebar-group::before {
+  display: none;
+  /* left:initial; */
+}
+.rspress-scrollbar {
+  padding-left: 0.5rem;
+}
+.rspress-scrollbar,
+#aside-container {
+  padding-top: var(--rp-content-padding-y);
+}
+.rspress-scrollbar > nav > a > div,
+.rspress-sidebar-item > a > div {
+  margin-left: 0.75rem !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: var(--rp-radius) !important;
+}
+
+.rspress-scrollbar > nav > a > div::before,
+.rspress-sidebar-item > a > div::before {
+  display: none;
+}
+
+.rspress-sidebar-collapse:hover {
+  border-radius: var(--rp-radius) !important ;
+}
+.rspress-sidebar-collapse > h2 {
+  padding-left: 1.25rem !important;
+}

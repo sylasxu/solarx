@@ -1,0 +1,19 @@
+[{
+    "type": "dir",
+    "name": "overview",
+    "label": "开始",
+    "collapsible": true,
+    "collapsed": false
+  },{
+    "type": "dir",
+    "name": "framework",
+    "label": "框架",
+    "collapsible": true,
+    "collapsed": false
+  },{
+    "type": "dir",
+    "name": "customization",
+    "label": "定制化",
+    "collapsible": true,
+    "collapsed": false
+  }]

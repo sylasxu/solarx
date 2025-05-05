@@ -1,0 +1,29 @@
+{
+  "name": "solarx-monorepo",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "prepare": "turbo run prepare",
+    "gen:ai-metadata": "ts-docs parse -o ./packages/ui/docs/ai"
+  },
+  "workspaces": [
+    "packages",
+    "apps"
+  ],
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [],
+  "author": "sylasxu",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "turbo": "^2.5.2",
+    "typescript": "^5.8.3"
+  }
+}
