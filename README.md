@@ -41,7 +41,7 @@
 pnpm install
 
 # 生成样式系统
-pnpm gen:styles
+pnpm run prepare
 
 # 启动开发环境
-pnpm dev
+pnpm run dev
