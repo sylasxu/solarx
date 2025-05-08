@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import styles from "./page.module.css";
-import { Button } from "solarx";
+import { Button,css ,Container} from "solarx";
 
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Button label="12">111</Button>
+        <Button label="12" backgroundColor="#121212" css={{bg:'zinc.600'}}>111</Button>
+        <Container w="20" bg={"zinc.700"} h="20"/>
         <Image
           className={styles.logo}
           src="/next.svg"

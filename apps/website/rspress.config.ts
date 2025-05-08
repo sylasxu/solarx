@@ -7,6 +7,7 @@ import { pluginPlayground } from '@rspress/plugin-playground';
 export default defineConfig({
   root: path.join(__dirname, 'docs'),
   // base: '/sylasxu/',
+  
   globalStyles: path.join(__dirname, 'styles/index.css'),
   title: 'Solarx',
   icon: '/rspress-icon.png',

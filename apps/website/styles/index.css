@@ -4,11 +4,11 @@
   /* 修改主题色 */
   --rp-c-brand: var(--color-indigo-500);
   --rp-c-brand-dark: var(--color-indigo-600);
-  --rp-c-brand-darker: var(--color-indigo-800);
+  --rp-c-brand-darker: var(--color-indigo-700);
   --rp-c-brand-light: var(--color-indigo-400);
   --rp-c-brand-lighter: var(--color-indigo-300);
   --rp-c-link: white;
-  --rp-c-brand-tint: var(--color-indigo-500);
+  --rp-c-brand-tint: var(--rp-c-brand);
   /* 修改左侧侧边栏宽度 */
   --rp-sidebar-width: 14rem;
   /* 修改右侧大纲栏宽度 */
@@ -23,8 +23,16 @@
   --rp-radius: 0.25rem;
   --rp-radius-small: 0.25rem;
   --rp-radius-large: 0.25rem;
+
+  --rp-code-block-bg:#F3F4F6;
   display: flex;
   justify-content: center;
+}
+
+
+.dark {
+  --rp-code-block-bg:#1f2937;
+  --rp-c-brand-tint: var(--rp-c-brand-darker);
 }
 
 @media (min-width: 1280px) {

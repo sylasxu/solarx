@@ -21,7 +21,8 @@
     "dev": "rslib build --watch",
     "format": "biome format --write",
     "test": "vitest run",
-    "prepare": "panda codegen"
+    "prepare": "panda cssgen --outfile dist/styles.css",
+        "bbb": "panda codegen "
   },
   "dependencies": {
     "@react-aria/interactions": "^3.25.0",

@@ -1,5 +1,5 @@
 import './button.css';
-import { css } from  '../../../../styled-system/css';
+import { css as cssFunction, Styles } from  '../../../../styled-system/css';
 import { motion } from 'motion/react';
 import { useRef } from 'react';
 
@@ -8,6 +8,7 @@ interface ButtonProps {
   backgroundColor?: string;
   size?: 'small' | 'medium' | 'large';
   label: string;
+  css?: Styles
   onClick?: () => void;
   children:React.ReactNode
 }
@@ -22,6 +23,7 @@ export const Button = ({
   size = 'medium',
   backgroundColor,
   label,
+  css,
   ...props
 }: ButtonProps) => {
   const ref = useRef(null);
@@ -31,14 +33,15 @@ export const Button = ({
     <motion.button
       {...props}
       ref={ref}
-      className={css({
-        bg: 'primary',
+      className={cssFunction({
+        
+        bg: backgroundColor||'primary',
         color: 'white',
         px: 4,
         py: 2,
         rounded: 'md',
         cursor: 'pointer'
-      })}
+      },css)}
       whileTap={{ scale: 0.95 }}
     >
       {props.children}

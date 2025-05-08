@@ -16,6 +16,7 @@ export default defineConfig({
   ],
   output: {
     target: 'web',
+    cleanDistPath:false
   },
   plugins: [pluginReact()],
 });
