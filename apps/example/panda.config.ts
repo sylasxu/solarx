@@ -8,20 +8,29 @@ export default defineConfig({
   exclude: [],
   outdir: "panda",
   syntax: "object-literal",
-  // presets:[],
   // importMap: {
   //   css: '@acme/ui-lib/css',
   //   recipes: '@acme/ui-lib/recipes',
   //   patterns: '@acme/ui-lib/patterns',
   //   jsx: '@acme/ui-lib/jsx',
   // },
+  globalVars: {
+    '--popper-reference-width': '4px',
+    // you can also generate a CSS @property
+    '--button-color': {
+      syntax: '<color>',
+      inherits: false,
+      initialValue: 'blue'
+    }
+  },
   theme: {
     extend: {
       tokens: {
         colors: {
-          primary: { value: "#0070f3" },
+          primary: { value: "red" },
         },
       },
+      
     },
   },
 });

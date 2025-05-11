@@ -1,5 +1,5 @@
 import './button.css';
-import { css as cssFunction, Styles } from  '../../../../styled-system/css';
+import { css as cssFunction, Styles } from  '../../../../panda/css';
 import { motion } from 'motion/react';
 import { useRef } from 'react';
 

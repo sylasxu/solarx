@@ -22,7 +22,8 @@
     "format": "biome format --write",
     "test": "vitest run",
     "prepare": "panda cssgen --outfile dist/styles.css",
-        "bbb": "panda codegen "
+    "bbb": "panda codegen"
+
   },
   "dependencies": {
     "@react-aria/interactions": "^3.25.0",
@@ -35,6 +36,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.2",
+    "@pandacss/studio":"^0.53.6",
     "jsdom": "^26.1.0",
     "react": "^19.1.0",
     "typescript": "^5.8.3",

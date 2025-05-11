@@ -1,5 +1,5 @@
 
-import { cva } from "../../../../styled-system/css";
+import { cva } from "../../../../panda/css";
 
 const cardStyle = cva({
     base: {

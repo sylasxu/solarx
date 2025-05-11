@@ -1,6 +1,6 @@
-import { css } from '../../../../styled-system/css'
-import { splitCssProps, styled } from '../../../../styled-system/jsx'
-import type { HTMLStyledProps } from '../../../../styled-system/types'
+import { css } from '../../../../panda/css'
+import { splitCssProps, styled } from '../../../../panda/jsx'
+import type { HTMLStyledProps } from '../../../../panda/types'
  
 export const Container=(props: HTMLStyledProps<'div'>)=> {
   const [cssProps, restProps] = splitCssProps(props)

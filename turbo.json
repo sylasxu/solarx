@@ -16,7 +16,7 @@
         "outputs": []
       },
       "prepare": {
-        "outputs": ["packages/ui/styled-system/**","packages/ui/dist/**.css"]
+        "outputs": ["packages/ui/panda/**","packages/ui/dist/**.css"]
       },
        "gen:ai-metadata": {
         "cache": false
