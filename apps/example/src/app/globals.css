@@ -1,2 +1,21 @@
 @import "tailwindcss";
 
+.point {
+    transition: all 0.3s ease;
+  }
+  
+  .brush rect {
+    fill: steelblue;
+    opacity: 0.2;
+  }
+  
+  .axis path {
+    stroke: #999;
+  }
+  
+  .axis text {
+    font-family: sans-serif;
+    font-size: 12px;
+  }
+
+  
