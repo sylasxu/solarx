@@ -17,16 +17,24 @@ import {
   axisBottom,
   axisLeft,
   scaleLinear,
+  BrushBehavior,
 } from "d3";
-import { log } from "console";
-import { Tooltip } from "./NebulaTooltip";
 
+import { NebulaTooltip } from "./NebulaTooltip";
 
+export const debounce = (func: () => void, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(func, wait);
+  };
+};
 
 export type Point = {
   x: number;
   y: number;
   id: string;
+  r: number;
 };
 
 interface NebulaRendererProps {
@@ -37,37 +45,27 @@ interface NebulaRendererProps {
   tickColor?: string; // 刻度线颜色
   labelColor?: string; // 标签颜色
   maxLinkedPoint?: number; // 最大选择数
+  className?: string;
+  data: Point[];
 }
 
 export interface NebulaRendererRef {
   reset: () => void;
 }
 
-const generatePoints = (count: number): Point[] => {
-  const points: Point[] = [];
-  for (let i = 0; i < count; i++) {
-    points.push({
-      id: i + "",
-      x: Math.max(Math.random() * 840,20),
-      y: Math.max(Math.random() * 640,20),
-    });
-  }
-  return points;
-};
-
-const data = generatePoints(1000);
-const r = 5;
-
-const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
+export const NebulaRenderer = forwardRef<
+  NebulaRendererRef,
+  NebulaRendererProps
+>(
   (
     {
       width = 840,
       height = 640,
       zoomExtent = [0.01, 100] as [number, number],
-      axisColor = "#999",
-      tickColor = "#666",
-      labelColor = "#333",
+
       maxLinkedPoint = 2,
+      data,
+      className,
     },
     ref
   ) => {
@@ -76,14 +74,19 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
     const xAxisRef = useRef<SVGGElement>(null);
     const yAxisRef = useRef<SVGGElement>(null);
     const brushRef = useRef<SVGGElement>(null);
+    const brushBehavior = useRef<BrushBehavior<SVGSVGElement> | undefined>(
+      null
+    );
+
     const mousePosition = useRef<Partial<Point>>({ x: 0, y: 0 });
     const [isBrushing, setIsBrushing] = useState(false);
     const [brushActive, setBrushActive] = useState(false);
     const transformRef = useRef<d3.ZoomTransform>(zoomIdentity);
     const [selectedPoints, setSelectedPoints] = useState<Point[]>([]);
     const [hoveredPoint, setHoveredPoint] = useState<Point | null>(null);
+
     // 获取当前可见区域
-    const visibleArea = useMemo(() => {
+    const visibleArea = (() => {
       const { k, x: tx, y: ty } = transformRef.current;
       return {
         x1: Math.max(0, -tx / k),
@@ -91,7 +94,7 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
         y1: Math.max(0, -ty / k),
         y2: Math.min(height, (height - ty) / k),
       };
-    }, [transformRef.current, width, height]);
+    })();
 
     // 绘制函数
     const draw = useCallback(() => {
@@ -103,77 +106,140 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
 
       // 清空画布
       ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      // ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, width, height);
+      const visiblePoints = data;
+      // const visiblePoints = data.filter(
+      //   (p) =>
+      //     p.x >= visibleArea.x1 &&
+      //     p.x <= visibleArea.x2 &&
+      //     p.y >= visibleArea.y1 &&
+      //     p.y <= visibleArea.y2
+      // );
 
-      const visiblePoints = data.filter(
-        (p) =>
-          p.x >= visibleArea.x1 &&
-          p.x <= visibleArea.x2 &&
-          p.y >= visibleArea.y1 &&
-          p.y <= visibleArea.y2
-      );
+      const hasSelectedPoint = selectedPoints.length > 0;
+      console.log("draw", selectedPoints, hoveredPoint);
 
-      // 绘制所有点应用当前变换
+      const visibleSelectedPoints: Point[] = [];
 
+      const slectedColor = "oklch(57.7% .245 27.325)";
 
+      // 绘制普通点
       for (const d of visiblePoints) {
+        // 跳过选中的点
+        const currentPointIsSelectedPoint =
+          selectedPoints.filter((p) => p.id === d.id).length > 0;
+        if (currentPointIsSelectedPoint) {
+          visibleSelectedPoints.push(d);
+          continue;
+        }
+        // 应用当前变换对点坐标
         const [x, y] = transformRef.current.apply([d.x, d.y]);
 
         ctx.beginPath();
-        ctx.arc(x, y, r * transformRef.current.k, 0, Math.PI * 2);
+        ctx.arc(x, y, d.r * transformRef.current.k, 0, Math.PI * 2);
 
-        // 选中状态
-        if (selectedPoints.filter(p=>p.id == d.id).length >0) {
-          ctx.fillStyle = "#ff0000";
-        }
-        // Hover状态
-        else if (hoveredPoint && d.id === hoveredPoint.id) {
-          ctx.fillStyle = "#00ff00";
-        }
-        // 普通状态
+        // Hover点设置
+        if (hoveredPoint && d.id === hoveredPoint.id) ctx.fillStyle = "#00ff00";
+        // 普通点设置
         else {
-          if (selectedPoints.length > 0) {
-            ctx.fillStyle = "rgba(31, 119, 180,.1)";
-          } else ctx.fillStyle = "rgba(31, 119, 180,.6)";
+          if (hasSelectedPoint) {
+            ctx.fillStyle = "oklch(0.13 0.028 261.692 / 10%)";
+          } else ctx.fillStyle = "oklch(51.1% .262 276.966 / 50%)";
         }
         ctx.fill();
       }
+      // 绘制线段
 
-      if (selectedPoints.length == 2) {
-        const [p1x, p1y] = transformRef.current.apply([selectedPoints[0].x,selectedPoints[0].y]);
-        const [p2x, p2y] = transformRef.current.apply([selectedPoints[1].x,selectedPoints[1].y]);
+      if (selectedPoints.length === 2) {
+        const [p1x, p1y] = transformRef.current.apply([
+          selectedPoints[0].x,
+          selectedPoints[0].y,
+        ]);
+        const [p2x, p2y] = transformRef.current.apply([
+          selectedPoints[1].x,
+          selectedPoints[1].y,
+        ]);
         ctx.beginPath();
 
         ctx.moveTo(p1x, p1y);
-        ctx.setLineDash([2*transformRef.current.k, 3*transformRef.current.k]);
+        ctx.setLineDash([
+          2 * transformRef.current.k,
+          5 * transformRef.current.k,
+        ]);
 
         ctx.lineTo(p2x, p2y);
-        ctx.lineWidth = 2*transformRef.current.k;
-        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2 * transformRef.current.k;
+        ctx.strokeStyle = "oklch(57.7% .245 27.325)";
         ctx.lineCap = "round";
         // Stroke it (Do the Drawing)
         ctx.stroke();
       }
 
-      // Define a new path
+      // 绘制选中点,保证在最上层
+
+      for (const d of visibleSelectedPoints) {
+        const [x, y] = transformRef.current.apply([d.x, d.y]);
+
+        // 阴影设置
+        ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+
+        // 绘制阴影外圈
+        ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+        ctx.beginPath();
+        ctx.arc(x, y, d.r * transformRef.current.k, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 主外圈
+        ctx.fillStyle = "#ff0000";
+        ctx.beginPath();
+        ctx.arc(x, y, d.r * transformRef.current.k * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 内圈（重置阴影）
+        ctx.shadowColor = "transparent";
+        ctx.fillStyle = slectedColor;
+        ctx.beginPath();
+        ctx.arc(x, y, d.r * transformRef.current.k * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 添加光晕效果
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 12);
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, d.r * transformRef.current.k, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.restore();
-    }, [visibleArea, selectedPoints, hoveredPoint]);
+    }, [
+      width,
+      height,
+      data,
+      selectedPoints,
+      hoveredPoint,
+      transformRef.current,
+    ]);
 
-    const zoomBehavior = useMemo(() => {
-      return zoom<any, any>()
-        .scaleExtent(zoomExtent)
-        // .filter((event) => event.type === "wheel")
-        .on("zoom", ({ transform }) => {
-          transformRef.current = transform;
-          draw();
-          updateAxes();
-        });
-    }, [zoomExtent]);
+    const zoomBehavior = zoom<any, any>()
+      .scaleExtent(zoomExtent)
+      .filter((event) => event.type === "wheel")
+      .on("zoom", ({ transform }) => {
+        transformRef.current = transform;
+        console.log("mousePosition", mousePosition);
+
+        draw();
+        updateAxes();
+      });
 
     // 初始化刷选工具
-    const initBrush =() => {
+    const initBrush = () => {
       if (!brushRef.current || !svgRef.current) return;
 
       // 优化：对move防抖
@@ -186,11 +252,11 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
           console.log("brush start");
           setIsBrushing(true);
         })
-        .on("end", (event) => { 
-            console.log("brush end");
+        .on("end", (event) => {
+          console.log("brush end");
           setIsBrushing(false);
           if (!event.selection) return;
-       
+
           const [[x0, y0], [x1, y1]] = event.selection;
           const svg = svgRef.current;
           if (!svg) return;
@@ -216,25 +282,27 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
           select(canvasRef.current)
             .transition()
             .duration(500)
-            .call(zoomBehavior.transform as any, newTransform);
+            .call(zoomBehavior.transform, newTransform);
         });
-        
+
       select(brushRef.current)
         .call(brushBehavior as any)
         .call(brushBehavior.move as any, null); // 初始清除选择
+
+      return brushBehavior;
     };
 
-    const updateAxes = useCallback(() => {
+    const updateAxes = () => {
       if (!svgRef.current) return;
 
       const xScale = scaleLinear()
-        .domain([0, max(data, (d) => d["x"]) || 0])
-        .range([20, width - 20])
+        .domain([0, max(data, (d) => d.x) || 0])
+        .range([20, width - 100])
         .nice();
 
       const yScale = scaleLinear()
-        .domain([0, max(data, (d) => d["y"]) || 0])
-        .range([height - 20, 20])
+        .domain([0, max(data, (d) => d.y) || 0])
+        .range([height - 100, 20])
         .nice();
 
       const scaleX = transformRef.current
@@ -246,7 +314,7 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
       // 根据缩放级别调整刻度数量
       const tickCount = Math.max(
         2,
-        Math.min(8, Math.floor(width / (100 / transformRef.current.k)))
+        Math.min(5, Math.floor(width / (100 / transformRef.current.k)))
       );
       // X轴刻度（保留刻度和值）
       const xAxis = axisBottom(xScale).ticks(tickCount).tickSizeOuter(0);
@@ -254,45 +322,42 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
       const yAxis = axisLeft(yScale).ticks(tickCount).tickSizeOuter(0);
 
       select(xAxisRef.current)
-        .attr("transform", `translate(20, ${height - 20})`)
+        .attr("transform", `translate(20, ${height - 100})`)
         .call(xAxis.tickSizeOuter(0).scale(scaleX) as any)
         .select(".domain")
-        .remove()
-        .attr("stroke", "#999")
-        .selectAll("text")
-        .attr("fill", "#666")
-        .attr("font-size", "10px")
-        .selectAll(".tick line")
-        .attr("stroke", tickColor) // 刻度线颜色
-        .attr("stroke-width", 1);
+        .remove();
+
       select(yAxisRef.current)
         .attr("transform", `translate(${40}, 0)`)
         .call(yAxis.tickSizeOuter(0).scale(scaleY) as any)
         .select(".domain")
-        .remove()
-        .attr("stroke", "#999")
-        .selectAll("text")
-        .attr("fill", "#666")
-        .attr("font-size", "10px")
-        .selectAll(".tick line")
-        .attr("stroke", tickColor) // 刻度线颜色
-        .attr("stroke-width", 1);
-    }, [width, height, axisColor, tickColor, labelColor]);
+        .remove();
+      //   .attr('stroke', '#999')
+      //   .selectAll('text')
+      //   .attr('fill', '#666')
+      //   .attr('font-size', '10px')
+      //   .selectAll('.tick line')
+      //   .attr('stroke', tickColor) // 刻度线颜色
+      //   .attr('stroke-width', 1);
+    };
+
+    const resetRenderer = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      select(canvas).transition().call(zoomBehavior.transform, zoomIdentity);
+      setHoveredPoint(null);
+      setSelectedPoints([]);
+    };
 
     // 暴露出去的声明式ref方法
     useImperativeHandle(ref, () => ({
       // 重制渲染器到初始值
-      reset: () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        select(canvas).transition().call(zoomBehavior.transform, zoomIdentity);
-      },
+      reset: resetRenderer,
     }));
 
     // 处理鼠标移动事件
     const handleMouseMove = useCallback(
       (event: React.MouseEvent<HTMLCanvasElement>) => {
-
         if (isBrushing || brushActive) return;
 
         const canvas = canvasRef.current;
@@ -314,12 +379,12 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
         // 查找最近的悬停点
         let closestPoint: Point | null = null;
         let minDistance = Infinity;
-        const hoverRadius = r * k; // 悬停敏感区域半径
+        const hoverRadius = 20 / k; // 悬停敏感区域半径
 
         const visiblePoints = data;
         // 只检测视口内的点
 
-        // const visiblePoints = data.filter(p =>
+        //  visiblePoints = data.filter(p =>
         //   p.x >= visibleArea.x1 &&
         //   p.x <= visibleArea.x2 &&
         //   p.y >= visibleArea.y1 &&
@@ -335,27 +400,26 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
             closestPoint = point;
           }
         });
-
         setHoveredPoint(closestPoint);
       },
       [isBrushing, brushActive]
     );
 
-    // const debouncedDraw = useDebounce(draw, 10);
-    // 实时重绘（响应hover状态变化）
-    useEffect(() => {
-      draw();
-    }, [hoveredPoint, selectedPoints]);
-
     // 处理点击事件
-    const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-      if (hoveredPoint && (selectedPoints.length < maxLinkedPoint))
+    // event: React.MouseEvent<HTMLCanvasElement>
+    const handleClick = () => {
+      if (hoveredPoint && selectedPoints.length < maxLinkedPoint)
         setSelectedPoints([...selectedPoints, hoveredPoint]);
 
-      if(!hoveredPoint){
-        setSelectedPoints([])
+      if (!hoveredPoint) {
+        setSelectedPoints([]);
       }
     };
+
+    // 实时重绘（响应hover状态变化）
+    useEffect(() => {
+      debounce(draw, 10)();
+    }, [hoveredPoint, selectedPoints]);
 
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -363,31 +427,33 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
 
       const svg = svgRef.current;
       if (!svg) return;
-
       // 初始化画布
       canvas.width = width;
       canvas.height = height - 60;
+
+      // 重新绘制
       draw();
       updateAxes();
-      initBrush();
+      if (!brushBehavior.current) brushBehavior.current = initBrush();
+
       // 为 Canvas 添加 D3 缩放能力
       select(canvas)
         .call(zoomBehavior)
         .on("wheel", (event) => event.preventDefault())
-        .on("mousemove", handleMouseMove as any)
+        .on("mousemove", handleMouseMove)
         .on("mouseout", () => setHoveredPoint(null));
-      // 为 Svg 添加 D3 缩放能力
+
+      // 为 Svg 坐标轴同步 Canvas 缩放
       select(svg)
         .call(zoomBehavior)
         .on("wheel", (event) => event.preventDefault());
 
-      // 快捷键切换模式
+      // Ctrl快捷键切换模式
       const handleKeyDown = (e: KeyboardEvent) => {
-        console.log("handleKeyDown", e.key);
         if (["Control", "Meta", "Ctrl"].includes(e.key)) setBrushActive(true);
       };
+
       const handleKeyUp = (e: KeyboardEvent) => {
-        console.log("handleKeyUp", e.key);
         if (["Control", "Meta", "Ctrl"].includes(e.key)) setBrushActive(false);
       };
 
@@ -400,34 +466,26 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
         window.removeEventListener("keydown", handleKeyDown);
         window.removeEventListener("keyup", handleKeyUp);
       };
-    }, [draw, generatePoints, updateAxes, initBrush, handleMouseMove]);
+    }, [width, height]);
 
     return (
-      <div
-        style={{
-          position: "relative",
-          width: "100vw",
-          height: "100vh",
-          padding: "1rem",
-        }}
-      >
+      <div className={`w-[100vw] relative pa-1 ${className}`}>
         <canvas
           ref={canvasRef}
-          style={{ position: "absolute", top: 40, left: 40 }}
-          width={width}
           height={height}
+          width={width}
+          style={{ position: "absolute", inset: 40 }}
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setHoveredPoint(null)}
         />
         <svg
           ref={svgRef}
-          width={width}
-          height={height}
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
+            inset: 0,
+            width: "100%",
+            height: "100%",
             pointerEvents: brushActive ? "all" : "none",
           }}
         >
@@ -451,32 +509,35 @@ const NebulaRenderer = forwardRef<NebulaRendererRef, NebulaRendererProps>(
             className="brush-layer"
           />
         </svg>
-        {hoveredPoint && <Tooltip point={hoveredPoint} />}
-        {selectedPoints.map((p) => (
-          <Tooltip point={p} />
-        ))}
+        {/* {hoveredPoint && <NebulaTooltip point={{ ...hoveredPoint, ...mousePosition.current }} />} */}
+        {selectedPoints.length > 0 && <NebulaTooltip points={selectedPoints} />}
+        {selectedPoints.length === 0 && hoveredPoint && (
+          <NebulaTooltip points={[hoveredPoint]} />
+        )}
+        ))
         <div
           style={{
             position: "absolute",
             right: 10,
             top: 10,
-            background: "rgba(255,255,255,0.7)",
             padding: "5px 10px",
-            fontSize: 12,
             height: "max-content",
-            width: "20vw",
+            transform: "translateX(-100%)",
           }}
         >
-          当前缩放{parseFloat(transformRef.current.k + "").toFixed(2)}倍
-          <div>
-            可见区域为: [{visibleArea.x1.toFixed(0)},{" "}
-            {visibleArea.y1.toFixed(0)}] → [{visibleArea.x2.toFixed(0)},{" "}
-            {visibleArea.y2.toFixed(0)}]
-          </div>
+         
+            当前缩放
+            {parseFloat(`${transformRef.current.k}`).toFixed(2)}
+            
+            倍
+            <div>
+              可见区域为: [ {visibleArea.x1.toFixed(0)} ,
+               {visibleArea.y1.toFixed(0)} ] → [
+               {visibleArea.x2.toFixed(0)} ,
+               {visibleArea.y2.toFixed(0)} ]
+            </div>
         </div>
       </div>
     );
   }
 );
-
-export default NebulaRenderer;
