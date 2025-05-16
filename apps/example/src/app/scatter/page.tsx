@@ -8,12 +8,12 @@ function App() {
   const generatePoints = (count: number): Point[] => {
     const points: Point[] = [];
     for (let i = 0; i < count; i++) {
-      const x = Math.max(Math.abs((0.7 - Math.random())) * dimensions.width, 20);
+      const x = Math.max(Math.abs(0.7 - Math.random()) * dimensions.width, 20);
       points.push({
         id: `${i}`,
         x,
-        y: Math.min(Math.abs((0.7 - Math.random())) * dimensions.height, x),
-        r: Math.floor(Math.max(Math.random() * dimensions.height / 120, 5)),
+        y: Math.max(Math.abs(0.7 - Math.random()) * dimensions.height, 20),
+        r: 5,
       });
     }
     return points;
@@ -38,11 +38,10 @@ function App() {
     };
 
     // 防抖优化
-    const debouncedResize = debounce(handleResize, 100);
     // 初始化尺寸
     handleResize();
     // 监听容器尺寸变化
-    const resizeObserver = new ResizeObserver(debouncedResize);
+    const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(containerRef.current);
 
     return () => {
@@ -60,7 +59,25 @@ function App() {
   
   <NebulaRenderer data={data} ref={renderer} width={dimensions.width} height={dimensions.height}
       />
-      
+      <div className='text-blod'>
+            {' '}
+            总数据数量：
+            {data.length}
+          </div>
+          <div className='text-blod'>
+            {' '}
+            优化后实际实际渲染点数量：
+            { renderer.current?.getVisiblePointsLength()} 
+          </div>
+
+         
+                      当前缩放
+                      {parseFloat(`${renderer.current?.getTransformK()}`).toFixed(2)} 倍
+                      <div>
+                        可见区域为: [{renderer.current?.getVisibleArea().x1.toFixed(0)} , {renderer.current?.getVisibleArea().y1.toFixed(0)} ] →
+                        [{renderer.current?.getVisibleArea().x2.toFixed(0)} , {renderer.current?.getVisibleArea().y2.toFixed(0)} ]
+                      </div>
+            
     </div>
   );
 }
