@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "turbo run dev --parallel",
+    "dev:chart": "turbo run dev --filter=solarx-chart --filter=example",
     "build": "turbo run build",
     "test": "turbo run test",
     "prepare": "turbo run prepare",
