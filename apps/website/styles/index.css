@@ -7,8 +7,8 @@
   --rp-c-brand-darker: var(--color-indigo-700);
   --rp-c-brand-light: var(--color-indigo-400);
   --rp-c-brand-lighter: var(--color-indigo-300);
-  --rp-c-link: white;
-  --rp-c-brand-tint: var(--rp-c-brand);
+  --rp-c-link: var(--rp-c-text-1);
+  /* --rp-c-brand-tint: var(--rp-c-brand); */
   /* 修改左侧侧边栏宽度 */
   --rp-sidebar-width: 14rem;
   /* 修改右侧大纲栏宽度 */
@@ -32,12 +32,11 @@
 
 .dark {
   --rp-code-block-bg:#1f2937;
-  --rp-c-brand-tint: var(--rp-c-brand-darker);
 }
 
 @media (min-width: 1280px) {
   html:root {
-    --rp-content-padding-x: 1.5rem;
+    --rp-content-padding-x: 2rem;
   }
   .rspress-nav {
     padding: 0 var(--rp-content-padding-x);
@@ -45,7 +44,7 @@
 }
 
 body {
-  max-width: 80rem;
+  max-width: 85rem;
 }
 
 li > a {
@@ -108,8 +107,8 @@ li > a {
 }
 .rspress-scrollbar > nav > a > div,
 .rspress-sidebar-item > a > div {
-  margin-left: 0.75rem !important;
-  padding: 0.25rem 0.5rem !important;
+  /* margin-left: 0.75rem !important;
+  padding: 0.25rem 0.5rem !important; */
   border-radius: var(--rp-radius) !important;
 }
 
