@@ -1,16 +1,236 @@
-# Button
+# Button 按钮
 
-#### 结构
+按钮是用户界面中最基本的交互元素，用于触发操作或事件。
 
-#### 用法
+## 引入
+
+```tsx
+import { Button } from "solarx";
+```
+
+## 基础用法
+
+Button 组件支持多种变体和尺寸，可以根据需要进行配置。
+
 ```tsx iframe
 import { Button } from "solarx";
+
 function App() {
-  return         <Button label="12">111</Button>
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <Button>默认按钮</Button>
+      <Button variant="outline">轮廓按钮</Button>
+      <Button variant="ghost">幽灵按钮</Button>
+      <Button variant="link">链接按钮</Button>
+    </div>
+  );
 }
+
+export default App;
+```
+
+## 按钮尺寸
+
+Button 组件提供了多种尺寸选项，从超小到超大。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <Button size="xs">超小</Button>
+      <Button size="sm">小</Button>
+      <Button size="md">中等</Button>
+      <Button size="lg">大</Button>
+      <Button size="xl">超大</Button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## 颜色方案
+
+Button 组件支持多种颜色方案，可以通过 `colorScheme` 属性进行设置。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <Button colorScheme="primary">主要</Button>
+      <Button colorScheme="secondary">次要</Button>
+      <Button colorScheme="danger">危险</Button>
+      <Button colorScheme="success">成功</Button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## 加载状态
+
+通过 `isLoading` 属性可以显示按钮的加载状态。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <Button isLoading>加载中</Button>
+      <Button isLoading variant="outline">加载中</Button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## 图标按钮
+
+Button 组件支持在左侧或右侧添加图标。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <Button leftIcon={<span>👈</span>}>左侧图标</Button>
+      <Button rightIcon={<span>👉</span>}>右侧图标</Button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## 全宽按钮
+
+通过 `isFullWidth` 属性可以创建占满容器宽度的按钮。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return <Button isFullWidth>全宽按钮</Button>;
+}
+
+export default App;
+```
+
+## 自定义样式
+
+Button 组件支持通过 CSS 变量进行样式自定义。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+      <Button
+        style={{
+          '--button-bg': 'purple',
+          '--button-hover-bg': 'darkpurple',
+          '--button-color': 'white',
+        }}
+      >
+        自定义紫色按钮
+      </Button>
+      
+      <Button
+        variant="outline"
+        style={{
+          '--button-color': 'teal',
+          '--button-border-color': 'teal',
+          '--button-hover-bg': 'rgba(0, 128, 128, 0.1)',
+        }}
+      >
+        自定义轮廓按钮
+      </Button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## 禁用状态
+
+通过 `disabled` 属性可以禁用按钮。
+
+```tsx iframe
+import { Button } from "solarx";
+
+function App() {
+  return (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <Button disabled>禁用按钮</Button>
+      <Button disabled variant="outline">禁用轮廓按钮</Button>
+    </div>
+  );
+}
+
 export default App;
 ```
 
 ## API
 
 <API moduleName="button" />
+
+## 样式定制
+
+Button 组件使用 CSS 变量进行样式定制，您可以通过以下 CSS 变量覆盖默认样式：
+
+| CSS 变量 | 描述 | 默认值 |
+| --- | --- | --- |
+| `--button-bg` | 按钮背景色 | 主题中的 primary.500 |
+| `--button-color` | 按钮文字颜色 | 白色或 primary.500 (取决于变体) |
+| `--button-hover-bg` | 悬停时的背景色 | 主题中的 primary.600 |
+| `--button-active-bg` | 激活时的背景色 | 主题中的 primary.700 |
+| `--button-border-color` | 边框颜色 (用于 outline 变体) | 主题中的 primary.500 |
+
+您可以通过以下方式覆盖这些变量：
+
+1. 在组件上直接设置 style 属性：
+
+```tsx
+<Button 
+  style={{ 
+    '--button-bg': 'purple',
+    '--button-color': 'white' 
+  }}
+>
+  自定义按钮
+</Button>
+```
+
+2. 在 CSS 中全局设置：
+
+```css
+:root {
+  --button-bg: purple;
+  --button-color: white;
+}
+```
+
+3. 针对特定选择器设置：
+
+```css
+.custom-button {
+  --button-bg: purple;
+  --button-color: white;
+}
+```
+
+然后将类名应用到按钮上：
+
+```tsx
+<Button className="custom-button">自定义按钮</Button>
+```
