@@ -1,13 +1,8 @@
 import React, { forwardRef, ButtonHTMLAttributes } from 'react';
-import { buttonRecipe as button } from '../../../design-system/recipes/button.recipe';
-import { Spinner } from './Spinner'; // 假设您有一个 Spinner 组件
+import {  button, type ButtonVariant } from '../../../../panda/recipes';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'solid' | 'outline' | 'ghost' | 'link';
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  colorScheme?: 'primary' | 'secondary' | 'danger' | 'success';
-  isFullWidth?: boolean;
-  isLoading?: boolean;
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, ButtonVariant {
+
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   className?: string;
@@ -26,7 +21,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const [variantProps, restProps] = button.splitVariantProps(props);
     const {
       children,
-      isLoading,
       leftIcon,
       rightIcon,
       className = '',
@@ -34,23 +28,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     } = restProps;
 
     // 生成按钮样式类名
-    const buttonClasses = button({ ...variantProps, isLoading });
+    const buttonClasses = button({ ...variantProps });
 
     return (
       <button
         ref={ref}
         className={`${buttonClasses} ${className}`}
-        disabled={isLoading || htmlProps.disabled}
+        disabled={htmlProps.disabled}
         {...htmlProps}
       >
-        {isLoading && (
-          <span className="button-spinner">
-            <Spinner size={variantProps.size === 'xs' || variantProps.size === 'sm' ? 'sm' : 'md'} />
-          </span>
-        )}
-        {leftIcon && !isLoading && <span>{leftIcon}</span>}
+       
+        {leftIcon  && <span>{leftIcon}</span>}
         {children}
-        {rightIcon && !isLoading && <span>{rightIcon}</span>}
+        {rightIcon  && <span>{rightIcon}</span>}
       </button>
     );
   }

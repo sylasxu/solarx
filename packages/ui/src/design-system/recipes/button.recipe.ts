@@ -141,25 +141,7 @@ export const buttonRecipe = defineRecipe({
         width: '100%',
       },
     },
-    isLoading: {
-      true: {
-        position: 'relative',
-        cursor: 'default',
-        opacity: 0.6,
-        _disabled: {
-          opacity: 0.6,
-        },
-        '& > *:not(.button-spinner)': {
-          visibility: 'hidden',
-        },
-        '.button-spinner': {
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        },
-      },
-    },
+ 
   },
   defaultVariants: {
     variant: 'solid',
