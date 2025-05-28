@@ -1,5 +1,5 @@
-import { styled } from "../../../../panda/jsx"
-import { cva } from "../../../../panda/css"
+import { cva } from '../../../../panda/css';
+import { styled } from '../../../../panda/jsx';
 
 export const badge = cva({
   base: {
@@ -17,7 +17,7 @@ export const badge = cva({
         bg: 'green.500',
       },
     },
-  }
-})
+  },
+});
 
-export const Badge = styled('span', badge)
+export const Badge = styled('span', badge);

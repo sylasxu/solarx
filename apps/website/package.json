@@ -9,15 +9,17 @@
     "preview": "rspress preview"
   },
   "dependencies": {
-    "solarx": "workspace:*",
     "@tailwindcss/postcss": "^4.1.4",
     "postcss": "^8.5.3",
-    "rspress": "^1.43.12"
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "rspress": "^1.43.12",
+    "solarx": "workspace:*"
   },
   "devDependencies": {
     "@rspress/plugin-api-docgen": "^1.43.12",
     "@rspress/plugin-playground": "^1.43.12",
-    "@rspress/plugin-preview": "^1.43.12",
+    "@rspress/plugin-preview": "^1.44.0",
     "@types/node": "^18.11.17",
     "prettier": "^3.4.2",
     "rspress-plugin-font-open-sans": "^1.0.0",

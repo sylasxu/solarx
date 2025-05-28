@@ -1,9 +1,9 @@
-import { cva, type RecipeVariantProps } from '../../../panda/css';
+import { type RecipeVariantProps, cva } from '../../../panda/css';
 
 export const textRecipe = cva({
   base: {
     color: 'gray.800',
-    backgroundColor: 'var(--button-color)'
+    backgroundColor: 'var(--button-color)',
   },
   variants: {
     level: {

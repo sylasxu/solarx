@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'solarx/dist/styles.css';
 
 :root {
   /* 修改主题色 */

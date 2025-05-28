@@ -12,18 +12,19 @@ export default defineConfig({
   title: 'Solarx',
   icon: '/rspress-icon.png',
   plugins: [
-    pluginFontOpenSans(),
+    // pluginFontOpenSans(),
     pluginApiDocgen({
       entries: {
-        button: './src/index.tsx',
+        button: '../../packages/ui/src/components/core/button/Button.tsx',
       },
       apiParseTool: 'react-docgen-typescript',
     }),
     pluginPreview({
+
       iframeOptions:{
         // position:'fixed',
-
         // framework:'react',
+        // devPort: 3001,
       }
     }),
     // pluginPlayground(),
